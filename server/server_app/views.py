@@ -3,8 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-
+from .serializers import AuthSerializer
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from .models import UsersData
+import json
 
 
 from .models import Sportsmens, Visition
@@ -12,6 +19,32 @@ from .serializers import SportsmensSerializer, VisitionSerializer
 
 from .models import Sportsmens, Gruppa
 from .serializers import SportsmensSerializer, GruppaSerializer
+
+
+
+@csrf_exempt
+@require_POST
+def register_user(request):
+    try:
+        # Получаем данные из POST-запроса
+        data = json.loads(request.body)
+
+        # Получаем логин и пароль из данных
+        login = data.get('login')
+        password = data.get('password')
+
+        # Проверяем, существует ли пользователь с таким логином
+        if UsersData.objects.filter(login=login).exists():
+            return JsonResponse({'status': 'error', 'message': 'Пользователь с таким логином уже существует'})
+
+        # Создаем нового пользователя
+        UsersData.objects.create(login=login, password=password)
+
+        return JsonResponse({'status': 'success', 'message': 'Регистрация прошла успешно'})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
 
 class SportsmensList(generics.ListCreateAPIView):
     queryset = Sportsmens.objects.all()
@@ -103,4 +136,25 @@ class SportsmenDetailsAPIView(APIView):
             return Response({'error': 'Missing name or date in the request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AuthView(APIView):
 
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        # Просто возвращаем данные для теста
+        return Response({'message': 'GET запрос для аутентификации', 'status': 'success'}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = AuthSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, AuthUserGroups, AuthUserUserPermissions, Belt, Coaches, DjangoAdminLog, DjangoContentType, DjangoMigrations, DjangoSession, Gruppa, Payments, Sportsmens, Visition
 
-
+class AuthSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
 
 class BeltSerializer(serializers.ModelSerializer):
     class Meta:

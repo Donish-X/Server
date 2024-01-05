@@ -2,6 +2,7 @@
 from django.db import models
 
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -172,3 +173,15 @@ class Visition(models.Model):
     class Meta:
         managed = False
         db_table = 'visition'
+
+
+class UsersData(models.Model):
+
+    id = models.BigAutoField(primary_key=True)
+    login = models.CharField(max_length=50, blank=True, null=True)
+    password = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'users'
+
