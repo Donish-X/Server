@@ -22,29 +22,28 @@ from .serializers import SportsmensSerializer, GruppaSerializer
 
 
 
-@csrf_exempt
-@require_POST
-def register_user(request):
-    try:
-        # Получаем данные из POST-запроса
-        data = json.loads(request.body)
+class RegisterUserAPIView(APIView):
 
-        # Получаем логин и пароль из данных
-        login = data.get('login')
-        password = data.get('password')
+    def post(self, request, *args, **kwargs):
+        try:
+            # Получаем данные из POST-запроса
+            data = request.data
 
-        # Проверяем, существует ли пользователь с таким логином
-        if UsersData.objects.filter(login=login).exists():
-            return JsonResponse({'status': 'error', 'message': 'Пользователь с таким логином уже существует'})
+            # Получаем логин и пароль из данных
+            login = data.get('login')
+            password = data.get('password')
 
-        # Создаем нового пользователя
-        UsersData.objects.create(login=login, password=password)
+            # Проверяем, существует ли пользователь с таким логином
+            if UsersData.objects.filter(login=login).exists():
+                return JsonResponse({'status': 'error', 'message': 'Пользователь с таким логином уже существует'})
 
-        return JsonResponse({'status': 'success', 'message': 'Регистрация прошла успешно'})
+            # Создаем нового пользователя
+            UsersData.objects.create(login=login, password=password)
 
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({'status': 'success', 'message': 'Регистрация прошла успешно'})
 
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
 class SportsmensList(generics.ListCreateAPIView):
     queryset = Sportsmens.objects.all()

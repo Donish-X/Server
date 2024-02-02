@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from server_app.views import SportsmensList, GroupList, SportsmensByGroupAPIView,  SportsmenDetailsAPIView, AuthView, register_user
+from server_app.views import SportsmensList, GroupList, SportsmensByGroupAPIView,  SportsmenDetailsAPIView, AuthView, RegisterUserAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,7 +25,7 @@ urlpatterns = [
     path('api/sportsmens_by_group/', SportsmensByGroupAPIView.as_view(), name='sportsmens-by-group-api'),
     path('api/sportsmen_details/', SportsmenDetailsAPIView.as_view(), name='sportsmen-details-api'),
     path('api/token/', AuthView.as_view(), name='auth-token'),
-    path('api/register_user/', register_user, name='register-user'),
+    path('api/register_user/', RegisterUserAPIView.as_view(), name='register-user'),
     
 
 ]

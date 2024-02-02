@@ -34,3 +34,5 @@ class VisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visition
         fields = '__all__'
+
+

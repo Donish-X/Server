@@ -179,7 +179,7 @@ class UsersData(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     login = models.CharField(max_length=50, blank=True, null=True)
-    password = models.CharField(max_length=50)
+    password = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
